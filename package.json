@@ -4,7 +4,9 @@
   "description": "A rest api to process the app access token required for the Twitch API",
   "main": "app.js",
   "scripts": {
-    "start": "nodemon app.js"
+    "dev": "nodemon app.js",
+    "start": "node app.js",
+    "heroku-postbuild": "NPM_CONFIG_PRODUCTION=false npm install npm && run build"
   },
   "author": "Ross Findlay",
   "license": "ISC",

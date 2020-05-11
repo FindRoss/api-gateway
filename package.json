@@ -1,6 +1,9 @@
 {
   "name": "api-gateway",
   "version": "1.0.0",
+  "engines": {
+    "node": "11.8.x"
+  },
   "description": "A rest api to process the app access token required for the Twitch API",
   "main": "app.js",
   "scripts": {

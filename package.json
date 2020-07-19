@@ -5,10 +5,12 @@
     "node": "11.8.x"
   },
   "description": "A rest api to process the app access token required for the Twitch API",
-  "main": "app.js",
+  "main": "server.js",
   "scripts": {
-    "dev": "nodemon app.js",
-    "start": "node app.js"
+    "start": "node server",
+    "server": "nodemon server",
+    "client": "npm start --prefix client",
+    "dev": "concurrently \"npm run server\" \"npm run client\""
   },
   "author": "Ross Findlay",
   "license": "ISC",

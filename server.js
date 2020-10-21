@@ -40,6 +40,7 @@ const createToken = async () => {
       console.log('saving token to the databse')
       const savedToken = await token.save();
       return savedToken;
+      console.log('created a new token in createToken function: ', savedToken);
     } catch (err) {
       console.log(err)
     }
@@ -51,8 +52,10 @@ const createToken = async () => {
 
 const checkForToken = async (req, res, next) => {
   console.log('checkForToken function...')
+
   await Token.countDocuments(async function (err, count) {
-    console.log('count', count)
+    console.log('count', count);
+
     if (err) {
       console.log(err);
     }
@@ -71,25 +74,30 @@ const checkForToken = async (req, res, next) => {
 app.use(checkForToken);
 
 const checkDate = async (req, res, next) => {
-  console.log('checkDate function...')
+
+  console.log('checkDate function...');
+
   await Token.find({}, function (err, token) {
     if (err) {
       console.log(err);
     }
     const currentDate = new Date();
-    const expiryDate = token[0].expires;
+    const expiryDate = token[token.length - 1].expires;
+
+    console.log('current token, ', token[token.length - 1])
 
     if (Date.parse(expiryDate) > Date.parse(currentDate)) {
       console.log(`expiryDate is later than currentDate`);
       // CURRENT TOKEN IS FINE
       // SEND BACK TOKEN
       console.log('checkDate... send back token')
-      res.send(token);
+      res.send(token[token.length - 1]);
     } else {
       // CREATE TOKEN
       console.log('checkDate... creating new token')
       const newToken = createToken();
       res.send(newToken);
+      console.log('created a new token in checkDate function: ', newToken);
     }
   })
 };
@@ -99,7 +107,6 @@ app.use(checkDate);
 app.get('/', async (req, res) => {
   res.send('...hello world...')
 });
-
 
 const PORT = process.env.PORT || 6000;
 

@@ -10,11 +10,6 @@ const app = express();
 
 connectDB();
 
-// git init. 
-// host on github
-// try to upload to heroku.
-// .... try to hit the endpoint. 
-
 app.use(cors());
 app.use(express.json({ extended: false }))
 
@@ -37,12 +32,11 @@ const createToken = async () => {
 
     // save it to the database. 
     try {
-      console.log('saving token to the databse')
       const savedToken = await token.save();
+      console.log('Saved token to the database: ', savedToken);
       return savedToken;
-      console.log('created a new token in createToken function: ', savedToken);
     } catch (err) {
-      console.log(err)
+      throw new err;
     }
 
   } catch (err) {
@@ -53,17 +47,15 @@ const createToken = async () => {
 const checkForToken = async (req, res, next) => {
 
   await Token.countDocuments(async function (err, count) {
-    if (err) {
-      console.log(err);
-    }
+    if (err) console.log(err);
 
     if (count !== 0) {
+      // check if there are 1 or more tokens in the database
       next();
     } else if (count === 0) {
       console.log('count is 0 so we are here.')
-      // CREATE TOKEN
+      // create a new token
       const newToken = await createToken();
-      console.log('trying to console log newToken', newToken);
       res.send(newToken);
     }
   });
@@ -72,19 +64,19 @@ app.use(checkForToken);
 
 const checkDate = async (req, res, next) => {
 
-  console.log('checkDate function...');
-
   await Token.find({}, function (err, token) {
-    if (err) {
-      console.log(err);
-    }
+    if (err) console.log(err);
+
     const currentDate = new Date();
     const expiryDate = token[token.length - 1].expires;
 
     if (Date.parse(expiryDate) > Date.parse(currentDate)) {
+      // send the token back if it is still valid.
       res.send(token[token.length - 1]);
     } else {
+      // create a new token
       const newToken = createToken();
+      // having trouble with this bit. the only bit really. 
       res.send(newToken);
     }
   })
